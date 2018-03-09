@@ -1,4 +1,3 @@
-
 const searchForm = document.querySelector("#search-form");
 const searchInput = document.querySelector("#search-input");
 
@@ -17,7 +16,6 @@ searchForm.addEventListener("submit", (e)=>{
     searchTerm.value = "";
     //search Reddit
     search(searchTerm, limit, sortBy)
-
 
 
     e.preventDefault();
@@ -47,16 +45,23 @@ function search(searchTerm, searchLimit, sortBy){
     .then(res => res.json())
     .then(data => data.data.children.map((data)=>data.data))
     .then((results) => {
+        console.log(results);
         let output = "<div class='card-columns'>";
         // loop through post
         results.forEach((post)=>{
+            let img = post.preview ? post.preview.images[0].source.url : "http://postmediaottawacitizen2.files.wordpress.com/2014/06/politifact-photos-reddit.jpg"
+
             output+=`
             <div class='card'>
-              <img class='card-img-top' src='...' alt='Card image cap'>
+              <img class='card-img-top' src='${img}' alt='Card image cap'>
               <div class='card-block'>
-                <h4 class='card-title'>${post.title}</h4>
-                <p class='card-text'></p>
-                <a href='#' class='btn btn-primary'>Go somewhere</a>
+                <h4 class='card-title ml-2'>${post.title}</h4>
+                <p class='card-text ml-2'>${truncate(post.selftext, 100)}</p>
+                <a href='${post.url}' target="_blank" class='btn btn-primary ml-2'>Read More</a>
+                <hr>
+                    <span class="badge badge-secondary">Subreddit: ${post.subreddit}</span>
+                    <span class="badge badge-dark">Score: ${post.score}</span>
+                </hr>
               </div>
             </div>
 
@@ -66,4 +71,10 @@ function search(searchTerm, searchLimit, sortBy){
         document.querySelector("#results").innerHTML = output;
     })
     .catch(error => console.log(error));
+}
+
+// Truncate Text
+function truncate(text, numOfChar){
+    const shortend = text.indexOf(" ", numOfChar);
+    return shortend === -1? text : text.substring(0, shortend);
 }
